@@ -15,7 +15,7 @@ import argparse
 
 # the implemented algorithms
 import proj_perceptron
-#import proj_bagging
+import proj_bagging
 
 # pandas for data handling
 import pandas
@@ -49,14 +49,9 @@ def get_args():
 				'column except the last, and labels being '
 				'in the last column. other formats are not '
 				'implemented yet.')
-	# KNN specific arguments
-	parser.add_argument('-neighbors', help='number of neighbors to use '
-				'with KNN'
-				'. must be an integer.', type=int)
-	parser.add_argument('-p', help='p argument for scikit-learn KNN. must '
-				'be an integer.', type=int)
-	parser.add_argument('-metric', help='metric to use for scikit-learn '
-				'KNN.')
+	# bagging args
+	parser.add_argument('-n_estimators', help='number of estimators with '
+				'bagging', type=int)
 
 	# perceptron specific arguments
 	parser.add_argument('-epochs', help='epochs.', type=int)
@@ -66,11 +61,6 @@ def get_args():
 	# DT specific arguments
 	parser.add_argument('-criterion', help='criterion, e.g., gini.')
 	parser.add_argument('-max_depth', help='maximumd depth.', type=int)
-
-	# SVM specific arguments
-	parser.add_argument('-kernel', help='kernel. can be rbf or linear.')
-	parser.add_argument('-cnum', help='c value for svm.', type=float)
-	parser.add_argument('-gamma', help='gamma value for svm.', type=float)
 
 	# defaults
 	parser.add_argument('-defaults', help='can be 1 or 0. 1 will make '
@@ -85,21 +75,15 @@ def get_args():
 		args.max_depth = 4
 		args.random_state = 1
 
-		# KNN
-		args.neighbors = 5
-		args.p = 2
-		args.metric = 'minkowski'
-
-		# SVM
-		args.cnum = 10.0
 		args.random_state = 1
-		args.gamma = 0.10
-		if args.kernel is None:
-			args.kernel = 'linear'
 
 		# PCPN
 		args.epochs = 40
 		args.eta = 0.1
+
+		# bagging
+		args.n_estimators = 500
+		args.n_jobs = 2
 
 	return args
 
@@ -238,32 +222,34 @@ if args.classifier == 'pcpn':
 # TODO:
 elif args.classifier == 'bag':
 	# load
-	bag = proj_perceptron.Perceptron(X_train_std, X_test_std,
+	bag = proj_bagging.Bagging(X_train, X_test,
 					y_train, y_test,
-					epochs_=args.epochs,
-					eta_=args.eta,
-					random_state_=args.random_state)
+					criterion_=args.criterion,
+					max_depth_=args.max_depth,
+					random_state_=args.random_state,
+					n_estimators_=args.n_estimators,
+					n_jobs_=args.n_jobs)
 
 	# *** TRAIN ***
 	begin_t = time.time()
-	pcpn.fit()
+	bag.fit()
 	end_t = time.time()
 	train_t = end_t - begin_t
 
-	print('pcpn training time: {0:.2f}s'
+	print('bag training time: {0:.2f}s'
 		''.format(train_t))
 
 	# *** TEST ***
 	# transform test data
 	begin_t = time.time()
 	# actually test and get result
-	y_pred = pcpn.predict()
+	y_pred = bag.predict()
 	end_t = time.time()
 	test_t = end_t - begin_t
 
-	acc = 100 * accuracy_score(y_pred, pcpn.y_test)
+	acc = 100 * accuracy_score(y_pred, bag.y_test)
 
-	print('pcpn:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+	print('bag:\t\t\t{0:.2f}%\t{1:.2f}s\n'
 		''.format(acc, test_t))
 
 

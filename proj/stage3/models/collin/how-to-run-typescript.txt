@@ -1,0 +1,13 @@
+Script started on 2021-03-31 17:06:24-06:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="157" LINES="60"]
+]0;collin@unp: ~/Documents/Applied-ML-Project/proj/stage3/models/collin[01;32mcollin@unp[00m:[01;34m~/Documents/Applied-ML-Project/proj/stage3/models/collin[00m$ python3 main.py bag iris -defaults=1[12Pmv wip/proj_bagging.py .python3 main.py bag iris -defaults=1[12Pmv wip/proj_bagging.py .ls[Kpython3 main.py bag iris -defaults=1
+bag training time: 1.25s
+bag:			97.78%	0.19s
+
+^[[A]0;collin@unp: ~/Documents/Applied-ML-Project/proj/stage3/models/collin[01;32mcollin@unp[00m:[01;34m~/Documents/Applied-ML-Project/proj/stage3/models/collin[00m$ python3 main.py bag iris -defaults=1[12Pmv wip/proj_bagging.py .ls[Kmv wip/proj_bagging.py .python3 main.py bag iris -defaults=1[12Pmv wip/proj_bagging.py .ls[Kmv wip/proj_bagging.py .python3 main.py bag iris -defaults=1[12Pmv wip/proj_bagging.py .ls[Kpython3 main.py bag iris -defaults=1[K main.py bag iris -defaults=1[Kw[Kgit push origin mainw[Kpython3 main.py bag iris -defaults=1ls[Kmv wip/proj_bagging.py .python3 main.py bag iris -defaults=1[Kpython3 main.py bag iris -defaults=1[1P[1P[1P[1@p[1@c[1@p[1@n
+pcpn training time: 0.00s
+pcpn:			97.78%	0.03s
+
+]0;collin@unp: ~/Documents/Applied-ML-Project/proj/stage3/models/collin[01;32mcollin@unp[00m:[01;34m~/Documents/Applied-ML-Project/proj/stage3/models/collin[00m$ exit
+exit
+
+Script done on 2021-03-31 17:06:44-06:00 [COMMAND_EXIT_CODE="0"]
