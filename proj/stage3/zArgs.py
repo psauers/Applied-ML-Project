@@ -40,12 +40,13 @@ def get_args():
                              'pcpn (Perceptron), svm, sgd '
                              'dt (Decision Tree), rf (Random Forest), '
                              'and adaboost.')
-    parser.add_argument('dataset',
+    parser.add_argument('-dataset',
                         help='The dataset filepath to use. Must be a file'
                              'in csv format, with data being on every '
                              'column except the last, and labels being '
                              'in the last column. Other formats are not '
-                             'accepted.')
+                             'accepted. Default: bank.csv',
+                        default='bank.csv')
     # KNN specific arguments
     parser.add_argument('-neighbors',
                         help='Number of neighbors to use '
