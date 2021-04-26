@@ -33,15 +33,11 @@ from sklearn.tree import DecisionTreeClassifier as DTC
 class Bagging:
 	# __init__()
 	#
-	# input: Training data,
-	#	testing data,
-	#	training labels,
-	#	testing labels,
+	# input:
 	#	criterion, max_depth, random_state, number of estimators,
 	#	number of jobs
 	#
-	def __init__(self, X_train_, X_test_, y_train_, y_test_,
-			criterion_, max_depth_, random_state_,
+	def __init__(self, criterion_, max_depth_, random_state_,
 			n_estimators_, n_jobs_):
 		# initialize DTC
 		self.tree = DTC(criterion=criterion_, max_depth=max_depth_,
@@ -54,30 +50,16 @@ class Bagging:
 				n_jobs=n_jobs_,
 				random_state=random_state_)
 
-		self.X_train = X_train_
-		self.X_test = X_test_
-		self.y_train = y_train_
-		self.y_test = y_test_
-
 	# fit()
 	#
-	# input: (optional) the training data (if not given, will use
-	#					givens from __init__()),
-	#	(optional) the training labels (if not given, will use
-	#					givens from __init__())
+	# input: X_train, y_train
 	# output: the model is trained on the X_train data and y_train
 	#	targets (from __init__() if nothign is given)
 	#
 	#
 	# trains the model on the data provided
 	#
-	def fit(self, X_train_=None, y_train_=None):
-		# if the user wants to use their set __init__ values
-		if X_train_ is None:
-			X_train_ = self.X_train
-		if y_train_ is None:
-			y_train_ = self.y_train
-
+	def fit(self, X_train_, y_train_):
 		# train DTC tree
 		self.tree.fit(X_train_, y_train_)
 		# train BC
@@ -110,16 +92,10 @@ class Bagging:
 
 	# predict()
 	#
-	# input: (optional) the testing data from the dataset (if not
-	#					given, will use givens
-	#					from __init()__),
+	# input: X_test
 	# output: the predicted labels
 	#
-	def predict(self, X_test_=None):
-		# if the user wants to use their set __init__ values
-		if X_test_ is None:
-			X_test_ = self.X_test
-
+	def predict(self, X_test_):
 		y_pred = self.bag.predict(X_test_)
 		return y_pred
 

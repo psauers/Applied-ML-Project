@@ -16,6 +16,7 @@ import argparse
 # the implemented algorithms
 import proj_perceptron
 import proj_bagging
+import proj_adaline
 
 # pandas for data handling
 import pandas
@@ -109,6 +110,10 @@ def prepare_data(dataset=''):
 		# petal width features
 		X = iris.data[:, [2, 3]]
 		y = iris.target
+	elif dataset == 'breast':
+		breast = datasets.load_breast_cancer()
+		X = breast.data
+		y = breast.target
 
 	elif dataset == 'digits':
 		digits = datasets.load_digits()
@@ -191,15 +196,13 @@ X_train_std, X_test_std = do_feature_scaling(X_train, X_test)
 if args.classifier == 'pcpn':
 	# load Perceptron
 	# NOTE: using feature scaling here...
-	pcpn = proj_perceptron.Perceptron(X_train_std, X_test_std,
-					y_train, y_test,
-					epochs_=args.epochs,
+	pcpn = proj_perceptron.Perceptron(epochs_=args.epochs,
 					eta_=args.eta,
 					random_state_=args.random_state)
 
 	# *** TRAIN ***
 	begin_t = time.time()
-	pcpn.fit()
+	pcpn.fit(X_train, y_train)
 	end_t = time.time()
 	train_t = end_t - begin_t
 
@@ -210,29 +213,24 @@ if args.classifier == 'pcpn':
 	# transform test data
 	begin_t = time.time()
 	# actually test and get result
-	y_pred = pcpn.predict()
+	y_pred = pcpn.predict(X_test)
 	end_t = time.time()
 	test_t = end_t - begin_t
 
-	acc = 100 * accuracy_score(y_pred, pcpn.y_test)
+	acc = 100 * accuracy_score(y_pred, y_test)
 
 	print('pcpn:\t\t\t{0:.2f}%\t{1:.2f}s\n'
 		''.format(acc, test_t))
-
-# TODO:
-elif args.classifier == 'bag':
-	# load
-	bag = proj_bagging.Bagging(X_train, X_test,
-					y_train, y_test,
-					criterion_=args.criterion,
+elif args.classifier == 'bagging':
+	bag = proj_bagging.Bagging(criterion_=args.criterion,
 					max_depth_=args.max_depth,
+					n_jobs_=args.n_jobs,
 					random_state_=args.random_state,
-					n_estimators_=args.n_estimators,
-					n_jobs_=args.n_jobs)
+					n_estimators_=args.n_estimators)
 
 	# *** TRAIN ***
 	begin_t = time.time()
-	bag.fit()
+	bag.fit(X_train, y_train)
 	end_t = time.time()
 	train_t = end_t - begin_t
 
@@ -243,11 +241,36 @@ elif args.classifier == 'bag':
 	# transform test data
 	begin_t = time.time()
 	# actually test and get result
-	y_pred = bag.predict()
+	y_pred = bag.predict(X_test)
 	end_t = time.time()
 	test_t = end_t - begin_t
 
-	acc = 100 * accuracy_score(y_pred, bag.y_test)
+	acc = 100 * accuracy_score(y_pred, y_test)
+
+	print('bag:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+		''.format(acc, test_t))
+elif args.classifier == 'adaline':
+	bag = proj_adaline.Adaline(n_iter_=args.n_iter, eta_=args.eta,
+					random_state_=args.random_state)
+
+	# *** TRAIN ***
+	begin_t = time.time()
+	bag.fit(X_train, y_train)
+	end_t = time.time()
+	train_t = end_t - begin_t
+
+	print('bag training time: {0:.2f}s'
+		''.format(train_t))
+
+	# *** TEST ***
+	# transform test data
+	begin_t = time.time()
+	# actually test and get result
+	y_pred = bag.predict(X_test)
+	end_t = time.time()
+	test_t = end_t - begin_t
+
+	acc = 100 * accuracy_score(y_pred, y_test)
 
 	print('bag:\t\t\t{0:.2f}%\t{1:.2f}s\n'
 		''.format(acc, test_t))
