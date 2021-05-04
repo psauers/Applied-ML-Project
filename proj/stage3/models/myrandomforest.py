@@ -5,9 +5,8 @@ class randomforest:
     def __init__(self, n_estimators, criterion, max_depth):
         self.random_forest = RandomForestClassifier(n_estimators=n_estimators,
                                                     criterion=criterion,
-                                                    max_depth=max_depth,
-                                                    random_state=None)
-        self.tree = DecisionTreeClassifier(criterion, max_depth, random_state=0)
+                                                    max_depth=max_depth)
+        self.tree = DecisionTreeClassifier(criterion=criterion, max_depth=max_depth, random_state=0)
 
     def fit(self, X_train, y_train):
         self.random_forest.fit(X_train, y_train)
