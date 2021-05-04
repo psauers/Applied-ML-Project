@@ -1,17 +1,15 @@
 from sklearn.linear_model import SGDClassifier
 
 class SGD():
-    #TODO: add customizable properties
-    def __init__(self, X_train, X_test, y_train, y_test):
-        self.X_train = X_train
-        self.X_test = X_test
-        self.y_train = y_train
-        self.y_test = y_test
-        self.model = SGDClassifier()
+    def __init__(self):
+        self.model = SGDClassifier(max_iter=15)
 
-    def fit(self):
-        self.model.fit(self.X_train, self.y_train)
+    def fit(self, X_train, y_train):
+        self.model.fit(X_train, y_train)
 
-    def run(self):
+    def run(self, X_test):
         y_pred = self.model.predict(X_test)
         return y_pred
+
+    def score(self, X_test, y_test):
+        return self.model.score(X_test, y_test)
