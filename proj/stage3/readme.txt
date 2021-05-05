@@ -7,8 +7,13 @@ Phillip Sauers
 Our code uses the bank dataset. You will need to have the bank.csv
 file in the current directory prior to running it.
 
+--- Data Analysis 
+To run the code, do
+	python3 data_analysis.py [data_path]
 
-To run our code, do
+
+--- Classification Models
+To run the code, do
 	python3 main.py [classifier] -[optional args]
 
 To see all possible arguments, do
