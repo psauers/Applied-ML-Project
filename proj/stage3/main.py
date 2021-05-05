@@ -53,6 +53,14 @@ from sklearn.metrics import accuracy_score
 from models.myknn import knn
 from models.myrandomforest import randomforest
 from models.mydecisiontree import decisiontree
+
+# graphs
+import matplotlib.pyplot as plt
+
+from models.proj_perceptron import Perceptron
+from models.proj_adaline import Adaline
+from models.proj_bagging import Bagging
+
 from models.proj_svm import SVM as svm
 from models.proj_adaboost import Boost as boost
 from models.proj_sgd import SGD as sgd
@@ -62,7 +70,6 @@ from models.proj_sgd import SGD as sgd
 from zHelpers import getDataXY
 from zHelpers import do_feature_scaling
 import os
-
 
 
 #
@@ -112,110 +119,307 @@ if __name__ == "__main__":
     #
     #   Classifier type based actions
     #
-    if args.classifier.lower() == 'knn':
-        print('KNN selected')
-        #grab args
-        n = 3
-        if args.neighbors:
-            n = args.neighbors
-        model = knn(n)
-        # train
-        model.fit(x_train, y_train)
-        # test
-        model.predict(x_test)
-        # report
-        print("KNN score: " + str(model.score(x_test, y_test)))
-    elif args.classifier.lower() == 'pcpn':
-        print("Perceptron selected")
+def do_pcpn(args):
+    print("Perceptron selected")
 
-        # train
+    # setup model values
+    random_state = 1
+    if args.random_state:
+        random_state = args.random_state
+    epochs = 10
+    if args.epochs:
+        epochs = args.epochs
+    eta = 0.01
+    if args.eta:
+        eta = args.eta
 
-        # test
+    model = Perceptron(epochs, eta, random_state)
 
-        # report
+    #train
+    model.fit(x_train, y_train)
 
-    elif args.classifier.lower() == 'svm':
-        print("SVM selected")
-        kernel = "linear"
-        c = 100
-        gamma = 1.0
-        if args.kernel:
-            kernel = args.kernel
-        if args.c_num:
-            c = args.c_num
-        if args.gamma:
-            gamma = args.gamma
-        model = svm(kernel, c, gamma)
-        # train
-        model.fit(x_train, y_train)
-        # test
-        model.predict(x_test)
-        # report
-        print("SVM score: " + str(model.score(x_test, y_test)))
-    elif args.classifier.lower() == 'sgd':
-        print("SGD selected")
-        model = sgd()
-        # train
-        model.fit(x_train, y_train)
-        # test
-        model.run(x_test)
-        # report
-        print("SGD score: " + str(model.score(x_test, y_test)))
+    #test
+    start = time.time()
+    y_pred = model.predict(x_test)
+    stop = time.time()
+    elapsed = stop - start
 
-    elif args.classifier.lower() == 'dt':
-        print("Decision Tree selected")
-        criterion = "gini"
-        max_depth = 4
-        if args.criterion:
-            criterion = args.criterion
-        if args.max_depth:
-            max_depth = args.max_depth
-        dt = decisiontree(criterion, max_depth)
-        # train
-        dt.fit(x_train, y_train)
-        # test
-        dt.predict(x_test)
-        # report
-        print("Decision tree score: " + str(dt.score(x_test, y_test)))
+    accuracy = accuracy_score(y_pred, y_test)
 
-    elif args.classifier.lower() == 'rf':
-        print("Random Forest selected")
-        n_estimators = 100
-        criterion = "gini"
-        max_depth = 4
-        if args.n_est:
-            n_estimators = args.n_est
-        if args.criterion:
-            criterion = args.criterion
-        if args.max_depth:
-            max_depth = args.max_depth
-        rf = randomforest(n_estimators, criterion, max_depth)
-        # train
-        rf.fit(x_train, y_train)
-        rf.tree_fit(x_train, y_train)
-        # test
-        rf.predict(x_test)
-        # report
-        print("Random forest score: " + str(rf.score(x_test, y_test)))
-        print("Tree score: " + str(rf.tree_score(x_test, y_test)))
+    return elapsed, accuracy
 
-    elif args.classifier.lower() == 'adaboost':
-        print("AdaBoost selected")
-        n_estimators = 500
-        if (args.n_est):
-            n_estimators = args.n_est
-        model = boost(n_est=n_estimators)
-        # train
-        model.fit(x_train, y_train)
-        # test
-        model.predict(x_test)
-        # report
-        print("Adaboost score: " + str(model.score(x_test, y_test)))
-        print("Tree score: " + str(model.tree_score(x_test, y_test)))
 
-    else:
-        print('Error: Invalid classifier type entered.')
-        print('Valid classifier types:')
-        print('knn, pcpn, svm, sgd, dt, rf, and adaboost')
-        quit(-2)
+def do_adaline(args):
+    print("Adaline selected")
+    # setup model values
+    random_state = 1
+    if args.random_state:
+        random_state = args.random_state
+    epochs = 10
+    if args.epochs:
+        epochs = args.epochs
+    eta = 0.01
+    if args.eta:
+        eta = args.eta
+
+    model = Adaline(epochs, eta, random_state)
+
+    #train
+    model.fit(x_train, y_train)
+
+    #test
+    start = time.time()
+    y_pred = model.predict(x_test)
+    stop = time.time()
+    elapsed = stop - start
+
+    accuracy = accuracy_score(y_pred, y_test)
+
+    return elapsed, accuracy
+
+
+def do_bagging(args):
+    print("Bagging selected")
+    # setup model values
+    criterion = 'entropy'
+    if args.criterion:
+        criterion = args.criterion
+    max_depth = 4
+    if args.max_depth:
+        max_depth = args.max_depth
+    random_state = 1
+    if args.random_state:
+        random_state = args.random_state
+    n_estimators = 500
+    if args.n_est:
+        n_estimators = args.n_est
+    n_jobs = 2
+    if args.n_jobs:
+        n_jobs = args.n_jobs
+
+
+    model = Bagging(criterion, max_depth, random_state, n_estimators,
+                               n_jobs)
+
+    #train
+    model.fit(x_train, y_train)
+
+    #test
+    start = time.time()
+    y_pred = model.predict(x_test)
+    stop = time.time()
+    elapsed = stop - start
+
+    accuracy = accuracy_score(y_test, y_pred)
+
+    return elapsed, accuracy
+
+
+def do_knn(args):
+    print('KNN selected')
+    #grab args
+    n = 3
+    if args.neighbors:
+        n = args.neighbors
+    model = knn(n)
+    # train
+    model.fit(x_train, y_train)
+
+    # test
+    start = time.time()
+    model.predict(x_test)
+    stop = time.time()
+    elapsed = stop - start
+
+    accuracy = model.score(x_test, y_test)
+
+    return elapsed, accuracy
+
+
+def do_svm(args):
+    print("SVM selected")
+    kernel = "linear"
+    c = 100
+    gamma = 1.0
+    if args.kernel:
+        kernel = args.kernel
+    if args.c_num:
+        c = args.c_num
+    if args.gamma:
+        gamma = args.gamma
+    model = svm(kernel, c, gamma)
+    # train
+    model.fit(x_train, y_train)
+    # test
+    start = time.time()
+    model.predict(x_test)
+    stop = time.time()
+    elapsed = stop - start
+
+    accuracy = model.score(x_test, y_test)
+
+    return elapsed, accuracy
+
+def do_sgd(args):
+    print("SGD selected")
+    model = sgd()
+    # train
+    model.fit(x_train, y_train)
+    # test
+    start = time.time()
+    model.run(x_test)
+    stop = time.time()
+    elapsed = stop - start
+
+    accuracy = model.score(x_test, y_test)
+
+    return elapsed, accuracy
+
+
+def do_dt(args):
+    print("Decision Tree selected")
+    criterion = "gini"
+    max_depth = 4
+    if args.criterion:
+        criterion = args.criterion
+    if args.max_depth:
+        max_depth = args.max_depth
+    model = decisiontree(criterion, max_depth)
+    # train
+    model.fit(x_train, y_train)
+    # test
+    start = time.time()
+    model.predict(x_test)
+    stop = time.time()
+    elapsed = stop - start
+
+    accuracy = model.score(x_test, y_test)
+
+    return elapsed, accuracy
+
+
+def do_rf(args):
+    print("Random Forest selected")
+    n_estimators = 100
+    criterion = "gini"
+    max_depth = 4
+    if args.n_est:
+        n_estimators = args.n_est
+    if args.criterion:
+        criterion = args.criterion
+    if args.max_depth:
+        max_depth = args.max_depth
+    model = randomforest(n_estimators, criterion, max_depth)
+    # train
+    model.fit(x_train, y_train)
+    model.tree_fit(x_train, y_train)
+    # test
+    start = time.time()
+    model.predict(x_test)
+    stop = time.time()
+    elapsed = stop - start
+
+    accuracy = model.score(x_test, y_test)
+
+    return elapsed, accuracy
+
+
+def do_adaboost(args):
+    print("AdaBoost selected")
+    n_estimators = 500
+    if (args.n_est):
+        n_estimators = args.n_est
+    model = boost(n_est=n_estimators)
+    # train
+    model.fit(x_train, y_train)
+    # test
+    start = time.time()
+    model.predict(x_test)
+    stop = time.time()
+    elapsed = stop - start
+
+    accuracy = model.score(x_test, y_test)
+
+    return elapsed, accuracy
+
+
+def test_all(models, args):
+    time_l = []
+    accuracy_l = []
+    for key in models:
+        elapsed, accuracy = models[key](args)
+        time_l.append(elapsed)
+        accuracy_l.append(accuracy)
+
+    return time_l, accuracy_l
+
+
+def graph(x, y, x_lab, y_lab, color_):
+    # plot the data vs method used
+
+    # set labels of axis/title
+    plt.xlabel(x_lab)
+    plt.ylabel(y_lab)
+    plt.title('{0} vs {1}'.format(x_lab, y_lab))
+
+    # plot data
+    plt.bar(x, y, color=color_)
+
+    # replace spaces in Y label name with underscores for
+    # the filename
+    plt.savefig('{0}-{1}.png'.format(x_lab, y_lab))
+
+    # write
+    plt.show()
+    # erase
+    plt.clf()
+
+
+
+
+
+if args.classifier.lower() == 'pcpn':
+    elapsed, accuracy = do_pcpn(args)
+elif args.classifier.lower() == 'adaline':
+    elapsed, accuracy = do_adaline(args)
+elif args.classifier.lower() == 'bagging':
+    elapsed, accuracy = do_bagging(args)
+elif args.classifier.lower() == 'knn':
+    elapsed, accuracy = do_knn(args)
+elif args.classifier.lower() == 'svm':
+    elapsed, accuracy = do_svm(args)
+elif args.classifier.lower() == 'sgd':
+    elapsed, accuracy = do_sgd(args)
+elif args.classifier.lower() == 'dt':
+    elapsed, accuracy = do_dt(args)
+elif args.classifier.lower() == 'rf':
+    elapsed, accuracy = do_rf(args)
+elif args.classifier.lower() == 'adaboost':
+    elapsed, accuracy = do_adaboost(args)
+# test all models and graph the time and accuracies of them
+elif args.classifier.lower() == 'test_all':
+    # all models mapped to their function references
+    models = {
+        'pcpn':do_pcpn,
+        'adaline':do_adaline,
+        'bagging':do_bagging,
+        'knn':do_knn,
+        'svm':do_svm,
+        'sgd':do_sgd,
+        'dt':do_dt,
+        'rf':do_rf,
+        'adaboost':do_adaboost
+    }
+    time_l, accuracy_l = test_all(models, args)
+
+    model_l = list(models.keys())
+    graph(model_l, time_l, 'Model', 'Testing_Time', 'green')
+    graph(model_l, accuracy_l, 'Model', 'Accuracy', 'blue')
+
+
+else:
+    print('Error: Invalid classifier type entered.')
+    print('Valid classifier types:')
+    print('knn, pcpn, adaline, bagging, svm, sgd, dt, rf, and adaboost')
+    quit(-2)
 

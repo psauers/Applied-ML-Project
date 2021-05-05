@@ -106,6 +106,7 @@ def get_args():
                         help='gamma value for SVM. Default: 0.10',
                         type=float,
                         default=0.10)
+    parser.add_argument('-n_jobs', help='number of jobs for Bagging.', type=int)
 
     # SGD specific arguments
     # TODO update when proj_sgd.py has customizable values

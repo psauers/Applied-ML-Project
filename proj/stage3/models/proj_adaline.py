@@ -32,11 +32,11 @@ class Adaline:
 	#			initialization
 	def __init__(self, n_iter_, eta_, random_state_):
 		# learning rate
-		self.eta = eta
+		self.eta = eta_
 		# iterations
-		self.n_iter = n_iter
+		self.n_iter = n_iter_
 		# seed for random weight
-		self.random_state = random_state
+		self.random_state = random_state_
 		# weights
 		self.w_ = None
 
