@@ -108,9 +108,6 @@ def get_args():
                         default=0.10)
     parser.add_argument('-n_jobs', help='number of jobs for Bagging.', type=int)
 
-    # SGD specific arguments
-    # TODO update when proj_sgd.py has customizable values
-
     # AdaBoost specific arguments
     # epoch, max depth, learning rate, and random state are handled in other algo types
 
@@ -126,8 +123,4 @@ def get_args():
     args = parser.parse_args()
 
     return args
-
-# TODO - Add bounds checking function with error handling
-# def check_bounds(args):
-    # Error out w/ message if any params are out of bounds
 
